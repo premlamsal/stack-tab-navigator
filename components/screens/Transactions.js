@@ -11,6 +11,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'deposit',
+      account: 'Account Name',
 
 
     },
@@ -20,6 +21,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -29,6 +31,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'deposit',
+      account: 'Account Name',
 
 
     },
@@ -38,6 +41,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'deposit',
+      account: 'Account Name',
 
 
     },
@@ -47,6 +51,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -56,6 +61,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -65,6 +71,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -74,6 +81,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -83,6 +91,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -92,6 +101,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -101,6 +111,7 @@ export default function Transactions() {
       date: '2022/02/08',
       amount: '800000',
       type: 'withdraw',
+      account: 'Account Name',
 
 
     },
@@ -124,6 +135,7 @@ export default function Transactions() {
                 <MaterialCommunityIcons name={item.type == 'deposit' ? 'bank-plus' : 'bank-minus'} style={styles.ionIcon} />
 
                 <View style={styles.listContainer}>
+                <Text style={styles.listAccount}>{item.account}</Text>
                   <Text style={styles.listTitle}>{item.title}</Text>
                   <Text style={styles.dateText}>{item.date}</Text>
 
@@ -161,7 +173,7 @@ const styles = StyleSheet.create({
       // borderWidth:1,
       borderRadius: 10,
       padding: 10,
-      paddingBottom:0,
+      paddingBottom:40,
       // flex: 1,
       // margin: 10,
     },
@@ -179,6 +191,12 @@ const styles = StyleSheet.create({
     leftPartTopSection: {
   
     },
+    listAccount:{
+      color:'grey',
+      margin:5,
+      textTransform:"uppercase",
+
+    },
     listTitle: {
       // fontSize: 16,
       color: 'black',
@@ -190,7 +208,7 @@ const styles = StyleSheet.create({
   
     },
     listContainer:{
-      // paddingBottom:10,
+      // paddingBottom:30,
     },
     leftPartTopSectionText: {
       color: 'white',

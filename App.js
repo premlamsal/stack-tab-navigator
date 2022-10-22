@@ -11,6 +11,7 @@ const Stack = createStackNavigator();
 
 import BottomNavigator from './components/BottomNavigator/BottomNavigator';
 import Profile from './components/pages/Profile';
+import AccountProfile from './components/pages/account/AccountProfile';
 
 
 export default function App() {
@@ -19,6 +20,8 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen name="Dashboard" component={BottomNavigator} options={{headerShown:false}}/>
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="AccountProfile" component={AccountProfile} />
+
       </Stack.Navigator>
   </NavigationContainer>
   );

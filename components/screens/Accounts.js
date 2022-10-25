@@ -28,7 +28,7 @@ function openDatabase() {
         };
     }
 
-    const db = SQLite.openDatabase("mynewdb");
+    const db = SQLite.openDatabase("mynewdb2");
     return db;
 }
 
@@ -39,14 +39,14 @@ export default function Accounts({ navigation }) {
 
 
     useEffect(() => {
-        getData();
+        getAccounts();
     }, []);
 
-    const getData = () => {
+    const getAccounts = () => {
 
         db.transaction(txn => {
             txn.executeSql(
-                `SELECT id,name,holder_name,account_number,bank_name,bank_branch,balance FROM ACCOUNTS ORDER BY ID DESC`,
+                `SELECT id,name,holder_name,account_number,bank_name,bank_branch,balance,opening_balance FROM ACCOUNTS ORDER BY ID DESC`,
                 [],
                 (sqlTxn, res) => {
                     let len = res.rows.length;
@@ -54,7 +54,19 @@ export default function Accounts({ navigation }) {
                         let results = [];
                         for (let i = 0; i < len; i++) {
                             let item = res.rows.item(i);
-                            results.push({ id: item.id, name: item.name });
+                            results.push({ id: item.id, 
+                                name: item.name,
+                                holderName: item.holder_name,
+                                accountNumber: item.account_number,
+                                bankName: item.bank_name,
+                                bankBranch: item.bankBranch,
+                                balance: item.balance,
+                                openingBalace: item.opening_balance,
+
+
+
+
+                             });
                             setAccounts(item)
                             //  console.log(item);
                         }
@@ -99,6 +111,47 @@ export default function Accounts({ navigation }) {
     const [empty, setEmpty] = useState([]);
 
     const addNewAccount = () => {
+
+
+    if (!name === "") {
+        Alert.alert("Please enter data");
+      } else {
+        db.transaction(txn => {
+          txn.executeSql(
+
+            //   //initial balance will be opening balance
+        
+                `INSERT INTO accounts (name,holder_name,account_number,bank_name,bank_branch,balance,opening_balance) VALUES (?,?,?,?,?,?,?)`,
+                [name,holderName,accountNumber,bankName,bankBranch,balance,openingBalace],
+            (sqlTxn, res) => {
+              console.log('inserted data successfully')
+            //   console.log(`${name} accounts added successfully!!`)
+  
+            },
+            error => {
+              console.log( error)
+            console.log('some error occured');
+            }
+  
+          )
+  
+        })
+
+        //get Accounts
+        getAccounts();
+
+        setName('');
+        setHolderName('');
+        setAccountNumber('');
+        setBankName('');
+        setBankBranch('');
+        setOpeningBalance('');
+        setModalVisible(!modalVisible);
+
+      }
+
+
+
 
 
     };
@@ -165,7 +218,7 @@ export default function Accounts({ navigation }) {
                                 />
                                 <TextInput
                                     style={styles.input}
-                                    placeholder='Enter opening balance name'
+                                    placeholder='Enter opening balance'
                                     onChangeText={setOpeningBalance}
                                     placeholderTextColor="grey"
                                 />
@@ -203,8 +256,8 @@ export default function Accounts({ navigation }) {
                         }}>
                             <MaterialCommunityIcons name='account-outline' style={styles.ionIcon} />
                             <View style={styles.listContainer}>
-                                <Text style={styles.listTitle}>{item.title}</Text>
-                                <Text style={styles.listAge}>{item.age}</Text>
+                                <Text style={styles.listTitle}>{item.name}</Text>
+                                <Text style={styles.listAge}>{item.accountNumber}</Text>
                             </View>
                         </TouchableOpacity>
                     )}

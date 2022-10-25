@@ -1,6 +1,7 @@
 import { Text, TextInput, View, StyleSheet, Button, FlatList, Alert, TouchableOpacity, ListItem, Pressable, Modal } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useEffect } from 'react';
+import * as SQLite from 'expo-sqlite';
 
 
 // const Item = ({ data, navigation}) => (
@@ -13,39 +14,81 @@ import { useState, useEffect } from 'react';
 //     </TouchableOpacity>
 // );
 
+
+
+
+function openDatabase() {
+    if (Platform.OS === "web") {
+        return {
+            transaction: () => {
+                return {
+                    executeSql: () => { },
+                };
+            },
+        };
+    }
+
+    const db = SQLite.openDatabase("mynewdb");
+    return db;
+}
+
+const db = openDatabase();
+
+
 export default function Accounts({ navigation }) {
-    const Accounts = [
-        {
-            id: '1',
-            title: 'First Account',
-            age: '10',
 
-        },
-        {
-            id: '2',
-            title: 'Second Account',
-            age: '10',
 
-        },
-        {
-            id: '3',
-            title: 'Third Account',
-            age: '10',
+    useEffect(() => {
+        getData();
+    }, []);
 
-        },
-        {
-            id: '4',
-            title: 'Third Account',
-            age: '10',
+    const getData = () => {
 
-        },
-        {
-            id: '5',
-            title: 'Third Account',
-            age: '10',
+        db.transaction(txn => {
+            txn.executeSql(
+                `SELECT id,name,holder_name,account_number,bank_name,bank_branch,balance FROM ACCOUNTS ORDER BY ID DESC`,
+                [],
+                (sqlTxn, res) => {
+                    let len = res.rows.length;
+                    if (len > 0) {
+                        let results = [];
+                        for (let i = 0; i < len; i++) {
+                            let item = res.rows.item(i);
+                            results.push({ id: item.id, name: item.name });
+                            setAccounts(item)
+                            //  console.log(item);
+                        }
+                        setAccounts(results);
 
-        },
-    ];
+                    }
+                    console.log(Accounts);
+
+                },
+                error => {
+                    console.log(error.message)
+                }
+
+            )
+
+        })
+
+
+
+    };
+    //holds multiple accounts 
+    const [Accounts, setAccounts] = useState([]);
+
+    //holds single account data
+    const [name, setName] = useState('');
+    const [holderName, setHolderName] = useState('');
+    const [accountNumber, setAccountNumber] = useState('');
+    const [bankName, setBankName] = useState('');
+    const [bankBranch, setBankBranch] = useState('');
+    const [openingBalace, setOpeningBalance] = useState('');
+    const [balance, setBalance] = useState('');
+
+
+
 
 
     // const renderItem = ({ item}) => (
@@ -53,16 +96,13 @@ export default function Accounts({ navigation }) {
     // );
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [name, setName] = useState('');
-    const [age, setAge] = useState('');
-
-    const [customers, setCustomers] = useState([]);
     const [empty, setEmpty] = useState([]);
 
-    const setData = () => {
+    const addNewAccount = () => {
 
 
     };
+
     return (
         <View style={styles.container}>
             <View style={{ alignItems: 'space-around', flexDirection: "row" }}>
@@ -91,31 +131,57 @@ export default function Accounts({ navigation }) {
                     >
                         <View style={styles.centeredView}>
                             <View style={styles.modalView}>
-                                <Text>Add Customer!</Text>
+                                <Text>Add Account!</Text>
 
                                 <TextInput
                                     style={styles.input}
                                     placeholder='Enter your name'
                                     onChangeText={setName}
+                                    placeholderTextColor="grey"
                                 />
                                 <TextInput
                                     style={styles.input}
-                                    placeholder='Enter your age'
-                                    onChangeText={setAge}
+                                    placeholder='Enter holder name'
+                                    onChangeText={setHolderName}
+                                    placeholderTextColor="grey"
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder='Enter account number '
+                                    onChangeText={setAccountNumber}
+                                    placeholderTextColor="grey"
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder='Enter bank name'
+                                    onChangeText={setBankName}
+                                    placeholderTextColor="grey"
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder='Enter bank branch'
+                                    onChangeText={setBankBranch}
+                                    placeholderTextColor="grey"
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder='Enter opening balance name'
+                                    onChangeText={setOpeningBalance}
+                                    placeholderTextColor="grey"
                                 />
                                 <View style={styles.modalButtonContainer}>
                                     <Pressable
-                                        style={[styles.buttonInsideModal, styles.buttonAddCustomer]}
-                                        onPress={setData}
+                                        style={[styles.buttonInsideModal, styles.buttonAddAccount]}
+                                        onPress={addNewAccount}
                                     >
-                                        <Text style={styles.textStyle}>Add</Text>
+                                        <Text style={styles.textStyleAdd}>Add</Text>
                                     </Pressable>
 
                                     <Pressable
                                         style={[styles.buttonInsideModal, styles.buttonCancel]}
-                                        onPress={() => setModalVisible(!modalVisible)}
+                                        onPress={(addNewAccount) => setModalVisible(!modalVisible)}
                                     >
-                                        <Text style={styles.textStyle}>Cancel</Text>
+                                        <Text style={styles.textStyleCancel}>Cancel</Text>
                                     </Pressable>
                                 </View>
                             </View>
@@ -169,6 +235,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         // alignItems:"center"
     },
+    textStyleAdd: {
+        textAlign: "center",
+
+    },
+    textStyleCancel: {
+        textAlign: "center",
+        color: 'white',
+    },
     listTitle: {
         fontSize: 25,
         color: '#101010',
@@ -207,15 +281,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 22,
         borderRadius: 20,
-
+        // backgroundColor:'white',
     },
     modalView: {
         margin: 20,
-        backgroundColor: "white",
+        backgroundColor: "#ffffff",
         borderRadius: 20,
         padding: 35,
+        paddingBottom:30,
         alignItems: "center",
-        shadowColor: "#000",
+        shadowColor: "grey",
         shadowOffset: {
             width: 0,
             height: 2
@@ -235,6 +310,7 @@ const styles = StyleSheet.create({
         elevation: 2,
         width: 100,
         margin: 10,
+        justifyContent: 'center',
         alignItems: "center"
     },
     buttonOpen: {
@@ -242,6 +318,7 @@ const styles = StyleSheet.create({
     },
     buttonCancel: {
         backgroundColor: "tomato",
+        color: 'white',
     },
     modalText: {
         marginBottom: 15,
@@ -258,7 +335,8 @@ const styles = StyleSheet.create({
         borderColor: '#555',
         borderRadius: 10,
         padding: 15,
-        backgroundColor: '#ffffff',
+        // color: 'black',
+        backgroundColor: '#fcfcfc',
         fontSize: 18,
         margin: 10,
     },
